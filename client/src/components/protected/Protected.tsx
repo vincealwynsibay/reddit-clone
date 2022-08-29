@@ -6,7 +6,7 @@ const Protected = (props: Props) => {
 	useEffect(() => {
 		const fetchData = async () => {
 			const token = (await localStorage.getItem("jit")) || "";
-			const res = await fetch("http://localhost:5000/api/auth/me", {
+			const res = await fetch("http://localhost:5000/api/user/me", {
 				headers: new Headers({
 					"Content-Type": "application/json",
 					Authorization: token,

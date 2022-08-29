@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { initializeAuth } from "./features/auth/authSlice";
 import { RootState } from "./app/store";
 import Navbar from "./components/layout/Navbar";
+import Form from "./Form";
 
 interface Props {}
 
@@ -22,7 +23,7 @@ const App = (props: Props) => {
 				return;
 			}
 
-			const res = await fetch("/api/auth/me", {
+			const res = await fetch("/api/user/me", {
 				headers: new Headers({
 					"Content-Type": "application/json",
 					Authorization: token,
@@ -50,6 +51,7 @@ const App = (props: Props) => {
 						path='/register'
 						element={<Register user={user} />}
 					></Route>
+					<Route path='/form' element={<Form />}></Route>
 					<Route
 						path='*'
 						element={<p>There is nothing here</p>}
