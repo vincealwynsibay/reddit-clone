@@ -3,23 +3,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const gravatar_1 = __importDefault(require("gravatar"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const express_1 = __importDefault(require("express"));
-const passport_1 = __importDefault(require("passport"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const userModel_1 = __importDefault(require("../models/userModel"));
+const profileModel_1 = __importDefault(require("../models/profileModel"));
 const router = express_1.default.Router();
-router.get("/me", passport_1.default.authenticate("jwt", { session: false }), (req, res) => {
-    res.json({ user: req.user });
-});
 router.post("/register", async (req, res) => {
-    const { email, username, password } = req.body;
-    console.log(email, username, password);
+    const { email, username, password, gender } = req.body;
     try {
         const salt = await bcryptjs_1.default.genSalt(10);
         const hashedPassword = await bcryptjs_1.default.hash(password, salt);
-        let newUser = new userModel_1.default({ username, email, password: hashedPassword });
+        let newUser = new userModel_1.default({
+            username,
+            email,
+            password: hashedPassword,
+        });
         newUser = await newUser.save();
+        let newProfile = new profileModel_1.default({
+            displayName: "",
+            banner: "",
+            description: "",
+            gender,
+            avatar: gravatar_1.default.url(email, { d: "retro" }),
+            socialLinks: [],
+        });
+        await newProfile.save();
         return res.json({ success: true, user: newUser });
     }
     catch (err) {

@@ -1,13 +1,8 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, ObjectId } from "mongoose";
 
-interface IUser {
-	username: string;
-	email: string;
-	password: string;
-}
-
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema(
 	{
+		_id: { type: Schema.Types.ObjectId },
 		username: {
 			type: String,
 			required: true,
@@ -24,4 +19,4 @@ const userSchema = new Schema<IUser>(
 	{ timestamps: true }
 );
 
-export default model<IUser>("User", userSchema);
+export default model("User", userSchema);

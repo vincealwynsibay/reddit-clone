@@ -1,28 +1,36 @@
+import gravatar from "gravatar";
 import bcrypt from "bcryptjs";
 import express from "express";
-import passport from "passport";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel";
+import Profile from "../models/profileModel";
 const router = express.Router();
 
-router.get(
-	"/me",
-	passport.authenticate("jwt", { session: false }),
-	(req, res) => {
-		res.json({ user: req.user });
-	}
-);
-
 router.post("/register", async (req, res) => {
-	const { email, username, password } = req.body;
-	console.log(email, username, password);
+	const { email, username, password, gender } = req.body;
 
 	try {
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(password, salt);
 
-		let newUser = new User({ username, email, password: hashedPassword });
+		let newUser: any = new User({
+			username,
+			email,
+			password: hashedPassword,
+		});
 		newUser = await newUser.save();
+
+		// create profile
+		let newProfile: any = new Profile({
+			displayName: "",
+			banner: "",
+			description: "",
+			gender,
+			avatar: gravatar.url(email, { d: "retro" }),
+			socialLinks: [],
+		});
+
+		await newProfile.save();
 
 		return res.json({ success: true, user: newUser });
 	} catch (err) {

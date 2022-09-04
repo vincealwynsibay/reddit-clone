@@ -12,18 +12,15 @@ const passport_1 = __importDefault(require("passport"));
 const index_1 = __importDefault(require("./api/routes/index"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({ origin: "http://localhost:3000", credentials: true }));
-require("./config/db");
-const passport_2 = require("./config/passport");
-(0, passport_2.applyPassportStrategy)(passport_1.default);
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(body_parser_1.default.json());
 app.use((0, morgan_1.default)("dev"));
-app.get("/ping", (_req, res) => {
-    res.json("pong");
-});
-app.get("/protected", passport_1.default.authenticate("jwt", { session: false }), (_req, res) => {
-    res.json({ message: "authenticated" });
-});
+require("./config/db");
+require("./config/cloudinary");
+const passport_2 = require("./config/passport");
+const cloudinary_1 = require("./config/cloudinary");
+(0, passport_2.applyPassportStrategy)(passport_1.default);
+app.use("*", cloudinary_1.cloudinaryConfig);
 app.use(index_1.default);
 app.use((err, _req, res, _next) => {
     console.error(err.stack);
